@@ -46,8 +46,8 @@
     "test:debug": "node --max_old_space_size=8192 --inspect-brk --expose-gc node_modules/.bin/jest --runInBand"
   },
   "devDependencies": {
-    "@commitlint/cli": "18.2.0",
-    "@commitlint/config-conventional": "18.1.0",
+    "@commitlint/cli": "18.4.0",
+    "@commitlint/config-conventional": "18.4.0",
     "@lerna-lite/publish": "2.6.0",
     "@types/jest": "29.5.8",
     "@types/node": "20.9.0",
