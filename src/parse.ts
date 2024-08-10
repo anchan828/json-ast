@@ -82,7 +82,6 @@ function parseValue(
     return { value, index };
   } else {
     const objectOrValue =
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       parseObject(source, tokenList, index, settings) || parseArray(source, tokenList, index, settings);
 
     if (objectOrValue) {
@@ -128,7 +127,7 @@ function parseObject(
     }
 
     switch (state) {
-      case objectStates._START_:
+      case objectStates._START_: {
         if (token.type === JsonTokenTypes.LEFT_BRACE) {
           startToken = token;
           state = objectStates.OPEN_OBJECT;
@@ -137,8 +136,9 @@ function parseObject(
           return null;
         }
         break;
+      }
 
-      case objectStates.OPEN_OBJECT:
+      case objectStates.OPEN_OBJECT: {
         if (token.type === JsonTokenTypes.STRING) {
           property = NodeFactory.fromType<JsonProperty>(JsonNodeTypes.PROPERTY);
           property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value);
@@ -174,8 +174,9 @@ function parseObject(
           );
         }
         break;
+      }
 
-      case objectStates.KEY:
+      case objectStates.KEY: {
         if (token.type === JsonTokenTypes.COLON) {
           state = objectStates.COLON;
           index++;
@@ -192,8 +193,9 @@ function parseObject(
           );
         }
         break;
+      }
 
-      case objectStates.COLON:
+      case objectStates.COLON: {
         const value = parseValue(source, tokenList, index, settings);
         index = value.index;
         property.value = value.value;
@@ -201,8 +203,9 @@ function parseObject(
         object.properties.push(property);
         state = objectStates.VALUE;
         break;
+      }
 
-      case objectStates.VALUE:
+      case objectStates.VALUE: {
         if (token.type === JsonTokenTypes.RIGHT_BRACE) {
           if (settings.verbose) {
             object.position = new JsonPosition(
@@ -232,8 +235,9 @@ function parseObject(
           );
         }
         break;
+      }
 
-      case objectStates.COMMA:
+      case objectStates.COMMA: {
         if (token.type === JsonTokenTypes.STRING) {
           property = NodeFactory.fromType<JsonProperty>(JsonNodeTypes.PROPERTY);
           property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value);
@@ -261,6 +265,7 @@ function parseObject(
           );
         }
         break;
+      }
     }
   }
 
@@ -290,7 +295,7 @@ function parseArray(
     }
 
     switch (state) {
-      case arrayStates._START_:
+      case arrayStates._START_: {
         if (token.type === JsonTokenTypes.LEFT_BRACKET) {
           startToken = token;
           state = arrayStates.OPEN_ARRAY;
@@ -299,8 +304,9 @@ function parseArray(
           return null;
         }
         break;
+      }
 
-      case arrayStates.OPEN_ARRAY:
+      case arrayStates.OPEN_ARRAY: {
         if (token.type === JsonTokenTypes.RIGHT_BRACKET) {
           if (settings.verbose) {
             array.position = new JsonPosition(
@@ -321,8 +327,9 @@ function parseArray(
           state = arrayStates.VALUE;
         }
         break;
+      }
 
-      case arrayStates.VALUE:
+      case arrayStates.VALUE: {
         if (token.type === JsonTokenTypes.RIGHT_BRACKET) {
           if (settings.verbose) {
             array.position = new JsonPosition(
@@ -352,8 +359,9 @@ function parseArray(
           );
         }
         break;
+      }
 
-      case arrayStates.COMMA:
+      case arrayStates.COMMA: {
         // Allow for trailing commas and too many commas
         if (token.type === JsonTokenTypes.COMMA || token.type === JsonTokenTypes.RIGHT_BRACKET) {
           state = arrayStates.VALUE;
@@ -364,6 +372,7 @@ function parseArray(
         array.items.push(value.value);
         state = arrayStates.VALUE;
         break;
+      }
     }
   }
 
