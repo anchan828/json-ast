@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-const { Visitor, parse, JsonKey, JsonDocument } = require("../../dist");
+const { Visitor, parse, JsonKey, JsonDocument } = require("../../dist/cjs");
 
 class MyVisitor extends Visitor {
   constructor() {

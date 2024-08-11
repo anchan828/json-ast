@@ -29,15 +29,15 @@
       "github-username": "anchan828"
     }
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/index.d.ts",
   "files": [
     "dist",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
     "format": "prettier --write '**/*.{ts,js,json,yml,yaml,md}'",
     "lint": "TIMING=1 eslint 'src/**/*.ts' 'test/**/*.ts'",
     "lint:fix": "npm run lint -- --fix",
@@ -61,5 +61,19 @@
     "ts-jest": "29.2.4",
     "typescript": "5.5.4",
     "typescript-eslint": "^8.0.1"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      },
+      "types": "./dist/cjs/index.d.ts",
+      "default": "./dist/cjs/index.js"
+    }
   }
 }
