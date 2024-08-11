@@ -1,5 +1,5 @@
 const util = require("util");
-const { parse, JsonDocument } = require("../../dist");
+const { parse, JsonDocument } = require("../../dist/cjs");
 const assert = require("assert");
 
 const SOME_JSON = `
