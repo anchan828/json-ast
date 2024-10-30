@@ -10,13 +10,13 @@ import {
   JsonProperty,
   JsonValue,
   NodeFactory,
-} from "./ast";
-import { error } from "./error";
-import { junker } from "./junker";
-import { unexpectedEnd, unexpectedToken } from "./parseErrorTypes";
-import { JsonPosition } from "./position";
-import { JsonTokenTypes, tokenize } from "./tokenize";
-import { JsonToken, ParseResult, ParseSettings } from "./types";
+} from "./ast.js";
+import { error } from "./error.js";
+import { junker } from "./junker.js";
+import { unexpectedEnd, unexpectedToken } from "./parseErrorTypes.js";
+import { JsonPosition } from "./position.js";
+import { JsonTokenTypes, tokenize } from "./tokenize.js";
+import { JsonToken, ParseResult, ParseSettings } from "./types.js";
 
 // import util from 'util';
 

@@ -17,8 +17,8 @@ export {
   toJSON,
   toObject,
   toString,
-} from "./ast";
-export { parse } from "./parse";
-export { JsonPosition } from "./position";
-export { ParseSettings } from "./types";
-export { Visitor } from "./visitor";
+} from "./ast.js";
+export { parse } from "./parse.js";
+export { JsonPosition } from "./position.js";
+export { ParseSettings } from "./types.js";
+export { Visitor } from "./visitor.js";
