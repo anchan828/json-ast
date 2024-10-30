@@ -1,5 +1,5 @@
-import { JsonPosition } from "./position";
-import { Visitor } from "./visitor";
+import { JsonPosition } from "./position.js";
+import { Visitor } from "./visitor.js";
 
 export enum JsonNodeTypes {
   DOCUMENT = "document",

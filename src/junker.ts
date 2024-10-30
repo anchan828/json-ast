@@ -1,6 +1,6 @@
 // import util from 'util';
-import { JsonTokenTypes } from "./tokenize";
-import { JsonToken, ParseSettings } from "./types";
+import { JsonTokenTypes } from "./tokenize.js";
+import { JsonToken, ParseSettings } from "./types.js";
 
 function findLastTokenIndexIn(tokenList, JsonTokenTypes): number {
   let rindex = tokenList.length - 1;

@@ -13,7 +13,7 @@ import {
   JsonProperty,
   JsonString,
   JsonTrue,
-} from "./ast";
+} from "./ast.js";
 
 // Do not export this function as it provides the main traversal of the AST
 function traverseAST(visitor: Visitor, node: JsonNodeType): void {

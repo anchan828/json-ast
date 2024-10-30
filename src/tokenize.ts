@@ -1,7 +1,7 @@
-import { error } from "./error";
-import { JsonPosition } from "./position";
-import { cannotTokenizeSymbol } from "./tokenizeErrorTypes";
-import { JsonToken, ParseSettings } from "./types";
+import { error } from "./error.js";
+import { JsonPosition } from "./position.js";
+import { cannotTokenizeSymbol } from "./tokenizeErrorTypes.js";
+import { JsonToken, ParseSettings } from "./types.js";
 
 export enum JsonTokenTypes {
   COMMENT = "COMMENT", // // ... \n\r? or /* ... */

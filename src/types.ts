@@ -1,5 +1,5 @@
-import { IJsonNode } from "./ast";
-import { JsonPosition } from "./position";
+import { IJsonNode } from "./ast.js";
+import { JsonPosition } from "./position.js";
 export interface ParseResult<T extends IJsonNode> {
   value: T;
   index: number;
