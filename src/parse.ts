@@ -75,7 +75,11 @@ function parseValue(
   }
   if (nodeType) {
     index++;
-    const value = NodeFactory.fromType<JsonValue>(nodeType, token.value);
+    const value = (
+      nodeType === JsonNodeTypes.STRING
+        ? NodeFactory.fromType<JsonValue>(nodeType, token.value, token.decoded)
+        : NodeFactory.fromType<JsonValue>(nodeType, token.value)
+    );
     if (settings.verbose) {
       value.position = token.position;
     }
@@ -140,7 +144,7 @@ function parseObject(
       case objectStates.OPEN_OBJECT: {
         if (token.type === JsonTokenTypes.STRING) {
           property = NodeFactory.fromType<JsonProperty>(JsonNodeTypes.PROPERTY);
-          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value);
+          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value, token.decoded);
 
           if (settings.verbose) {
             property.key.position = token.position;
@@ -239,7 +243,7 @@ function parseObject(
       case objectStates.COMMA: {
         if (token.type === JsonTokenTypes.STRING) {
           property = NodeFactory.fromType<JsonProperty>(JsonNodeTypes.PROPERTY);
-          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value);
+          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value, token.decoded);
 
           if (settings.verbose) {
             property.key.position = token.position;

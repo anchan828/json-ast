@@ -82,7 +82,7 @@ export class JsonValue extends JsonNode implements IJsonValue {
 export class JsonKey extends JsonNode implements IJsonValue {
   public readonly type: JsonNodeTypes.KEY = JsonNodeTypes.KEY;
 
-  constructor(public value: string = null) {
+  constructor(public value: string = null, public decoded: string = null, ) {
     super();
   }
 }
@@ -98,7 +98,7 @@ export class JsonComment extends JsonNode implements IJsonValue {
 export class JsonString extends JsonNode implements IJsonValue {
   public readonly type: JsonNodeTypes.STRING = JsonNodeTypes.STRING;
 
-  constructor(public value: string = null) {
+  constructor(public value: string = null, public decoded: string = null) {
     super();
   }
 }
@@ -163,10 +163,10 @@ export type JsonNodeType =
 // Utility methods to construct the objects
 //
 export class NodeFactory {
-  static fromType<T extends JsonNode>(objectType: JsonNodeTypes, _value = null): T {
+  static fromType<T extends JsonNode>(objectType: JsonNodeTypes, _value = null, _decoded = null): T {
     const clazz = nodeTypeObjectMapping[objectType];
     if (clazz === null) throw new Error(`AST node of type ${objectType} cannot be found`);
-    return _value !== null ? new clazz(_value) : new clazz();
+    return new clazz(_value, _decoded);
   }
 }
 
