@@ -193,9 +193,10 @@ function recursiveNodeConversion(rootNode: JsonNodeType): any {
       return result;
     }
     case JsonNodeTypes.VALUE:
+      return rootNode.value;
     case JsonNodeTypes.STRING:
     case JsonNodeTypes.KEY:
-      return rootNode.value;
+      return rootNode.decoded ?? rootNode.value;
     case JsonNodeTypes.NUMBER: {
       if (typeof rootNode.value !== "number") return parseFloat((rootNode as any).value);
       return rootNode.value;
