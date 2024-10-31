@@ -62,23 +62,23 @@ const numberStates = {
 
 // HELPERS
 
-function isDigit1to9(char): boolean {
+function isDigit1to9(char: string): boolean {
   return char >= "1" && char <= "9";
 }
 
-function isDigit(char): boolean {
+function isDigit(char: string): boolean {
   return char >= "0" && char <= "9";
 }
 
-function isLetter(char): boolean {
+function isLetter(char: string): boolean {
   return (char >= "a" && char <= "z") || (char >= "A" && char <= "Z");
 }
 
-function isHex(char): boolean {
+function isHex(char: string): boolean {
   return isDigit(char) || (char >= "a" && char <= "f") || (char >= "A" && char <= "F");
 }
 
-function isExp(char): boolean {
+function isExp(char: string): boolean {
   return char === "e" || char === "E";
 }
 
@@ -222,7 +222,7 @@ function parseChar(source: string, index: number, line: number, column: number):
 }
 
 function parseKeyword(source: string, index: number, line: number, column: number): ParseJsonToken | null {
-  const matched = Object.keys(keywordsTokens).find((name) => name === source.substr(index, name.length));
+  const matched = Object.keys(keywordsTokens).find((name) => name === source.slice(index, index + name.length));
 
   if (matched) {
     return {
