@@ -48,7 +48,7 @@ export function createObjectKey(value, position?: JsonPosition): JsonKey {
 }
 
 export function createEscapedObjectKey(value: string, decoded: string, position?: JsonPosition): JsonKey {
-  const result = new JsonKey(value);
+  const result = new JsonKey(value, decoded);
 
   if (position) {
     result.position = position;
@@ -114,7 +114,7 @@ export function createString(value, position?: JsonPosition): JsonString {
 }
 
 export function createEscapedString(value: string, decoded: string, position?: JsonPosition): JsonString {
-  const result = new JsonString(value);
+  const result = new JsonString(value, decoded);
 
   if (position) {
     result.position = position;
