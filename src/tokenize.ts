@@ -1,27 +1,12 @@
 import { error } from "./error.js";
 import { JsonPosition } from "./position.js";
 import { cannotTokenizeSymbol } from "./tokenizeErrorTypes.js";
-import { JsonToken, ParseSettings } from "./types.js";
-
-export enum JsonTokenTypes {
-  COMMENT = "COMMENT", // // ... \n\r? or /* ... */
-  LEFT_BRACE = "LEFT_BRACE", // {
-  RIGHT_BRACE = "RIGHT_BRACE", // }
-  LEFT_BRACKET = "LEFT_BRACKET", // [
-  RIGHT_BRACKET = "RIGHT_BRACKET", // ]
-  COLON = "COLON", //  :
-  COMMA = "COMMA", // ,
-  STRING = "STRING", //
-  NUMBER = "NUMBER", //
-  TRUE = "TRUE", // true
-  FALSE = "FALSE", // false
-  NULL = "NULL", // null
-  IDENTIFIER = "IDENTIFIER", // identifiers
-}
+import { JsonToken, JsonTokenTypes, ParseSettings } from "./types.js";
 
 interface ParseJsonToken {
   type: JsonTokenTypes;
   value: string;
+  decoded?: string | null;
   line: number;
   index: number;
   column: number;
@@ -48,6 +33,15 @@ const stringStates = {
   ESCAPE: 2,
 };
 
+const symbolSubstitutes = {
+  b: '\b', // Backspace
+  f: '\f', // Form feed
+  n: '\n', // New line
+  r: '\r', // Carriage return
+  t: '\t', // Horizontal tab
+};
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#escape_sequences
 const escapes = {
   '"': 0, // Quotation mask
   "\\": 1, // Reverse solidus
@@ -78,23 +72,23 @@ const numberStates = {
 
 // HELPERS
 
-function isDigit1to9(char): boolean {
+function isDigit1to9(char: string): boolean {
   return char >= "1" && char <= "9";
 }
 
-function isDigit(char): boolean {
+function isDigit(char: string): boolean {
   return char >= "0" && char <= "9";
 }
 
-function isLetter(char): boolean {
+function isLetter(char: string): boolean {
   return (char >= "a" && char <= "z") || (char >= "A" && char <= "Z");
 }
 
-function isHex(char): boolean {
+function isHex(char: string): boolean {
   return isDigit(char) || (char >= "a" && char <= "f") || (char >= "A" && char <= "F");
 }
 
-function isExp(char): boolean {
+function isExp(char: string): boolean {
   return char === "e" || char === "E";
 }
 
@@ -238,7 +232,7 @@ function parseChar(source: string, index: number, line: number, column: number):
 }
 
 function parseKeyword(source: string, index: number, line: number, column: number): ParseJsonToken | null {
-  const matched = Object.keys(keywordsTokens).find((name) => name === source.substr(index, name.length));
+  const matched = Object.keys(keywordsTokens).find((name) => name === source.slice(index, index + name.length));
 
   if (matched) {
     return {
@@ -286,6 +280,7 @@ function parseString(source: string, index: number, line: number, column: number
   const sourceLength = source.length;
   const startIndex = index;
   let buffer = "";
+  let decoded = "";
   let state = stringStates._START_;
 
   while (index < sourceLength) {
@@ -310,12 +305,14 @@ function parseString(source: string, index: number, line: number, column: number
           return {
             type: JsonTokenTypes.STRING,
             value: buffer,
-            line: line,
-            index: index,
+            decoded: decoded !== buffer ? decoded : null,
+            line,
+            index,
             column: column + index - startIndex,
           };
         } else {
           buffer += char;
+          decoded += char;
           index++;
         }
         break;
@@ -325,16 +322,28 @@ function parseString(source: string, index: number, line: number, column: number
           buffer += char;
           index++;
           if (char === "u") {
+            let hex = "";
+
             for (let i = 0; i < 4; i++) {
               const curChar = source.charAt(index);
               if (curChar && isHex(curChar)) {
-                buffer += curChar;
+                hex += curChar;
                 index++;
               } else {
                 return null;
               }
             }
+
+            buffer += hex;
+            decoded += String.fromCodePoint(parseInt(hex, 16));
+          } else {
+            if (char in symbolSubstitutes) {
+              decoded += symbolSubstitutes[char];
+            } else {
+              decoded += char;
+            }
           }
+
           state = stringStates.START_QUOTE_OR_CHAR;
         } else {
           return null;
@@ -487,7 +496,7 @@ export function tokenize(source: string, settings?: ParseSettings): JsonToken[] 
       parseString(source, index, line, column) ||
       parseNumber(source, index, line, column);
     if (matched) {
-      const token = { type: matched.type, value: matched.value } as JsonToken;
+      const token: JsonToken = { type: matched.type, value: matched.value, decoded: matched.decoded };
 
       if (settings.verbose) {
         token.position = new JsonPosition(line, column, index, matched.line, matched.column, matched.index);

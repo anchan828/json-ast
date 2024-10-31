@@ -47,6 +47,16 @@ export function createObjectKey(value, position?: JsonPosition): JsonKey {
   return result;
 }
 
+export function createEscapedObjectKey(value: string, decoded: string, position?: JsonPosition): JsonKey {
+  const result = new JsonKey(value, decoded);
+
+  if (position) {
+    result.position = position;
+  }
+
+  return result;
+}
+
 export function createObjectProperty(key, value): JsonProperty {
   const result = new JsonProperty();
   result.key = key;
@@ -95,6 +105,16 @@ export function createComment(value, position?: JsonPosition): JsonComment {
 
 export function createString(value, position?: JsonPosition): JsonString {
   const result = new JsonString(value);
+
+  if (position) {
+    result.position = position;
+  }
+
+  return result;
+}
+
+export function createEscapedString(value: string, decoded: string, position?: JsonPosition): JsonString {
+  const result = new JsonString(value, decoded);
 
   if (position) {
     result.position = position;

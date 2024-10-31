@@ -35,7 +35,7 @@ export abstract class JsonNode implements IJsonNode {
   public readonly type: JsonNodeTypes = JsonNodeTypes.ERROR;
 
   public accept(visitor: Visitor): void {
-    visitor.visit(this as any);
+    visitor.visit(this as unknown as JsonNodeType);
   }
 }
 
@@ -82,13 +82,13 @@ export class JsonValue extends JsonNode implements IJsonValue {
 export class JsonKey extends JsonNode implements IJsonValue {
   public readonly type: JsonNodeTypes.KEY = JsonNodeTypes.KEY;
 
-  constructor(public value: string = null) {
+  constructor(public value: string = null, public decoded: string = null) {
     super();
   }
 }
 
 export class JsonComment extends JsonNode implements IJsonValue {
-  public readonly type: JsonNodeTypes.KEY = JsonNodeTypes.KEY;
+  public readonly type: JsonNodeTypes.COMMENT = JsonNodeTypes.COMMENT;
 
   constructor(public value: string = null) {
     super();
@@ -98,7 +98,7 @@ export class JsonComment extends JsonNode implements IJsonValue {
 export class JsonString extends JsonNode implements IJsonValue {
   public readonly type: JsonNodeTypes.STRING = JsonNodeTypes.STRING;
 
-  constructor(public value: string = null) {
+  constructor(public value: string = null, public decoded: string = null) {
     super();
   }
 }
@@ -163,10 +163,10 @@ export type JsonNodeType =
 // Utility methods to construct the objects
 //
 export class NodeFactory {
-  static fromType<T extends JsonNode>(objectType: JsonNodeTypes, _value = null): T {
+  static fromType<T extends JsonNode>(objectType: JsonNodeTypes, _value = null, _decoded = null): T {
     const clazz = nodeTypeObjectMapping[objectType];
     if (clazz === null) throw new Error(`AST node of type ${objectType} cannot be found`);
-    return _value !== null ? new clazz(_value) : new clazz();
+    return new clazz(_value, _decoded);
   }
 }
 
@@ -193,9 +193,10 @@ function recursiveNodeConversion(rootNode: JsonNodeType): any {
       return result;
     }
     case JsonNodeTypes.VALUE:
+      return rootNode.value;
     case JsonNodeTypes.STRING:
     case JsonNodeTypes.KEY:
-      return rootNode.value;
+      return rootNode.decoded ?? rootNode.value;
     case JsonNodeTypes.NUMBER: {
       if (typeof rootNode.value !== "number") return parseFloat((rootNode as any).value);
       return rootNode.value;

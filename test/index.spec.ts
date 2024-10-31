@@ -175,4 +175,21 @@ describe("Object conversion to native JSON", function () {
 
     expect(JSON_TESTCASE).toEqual(toJSON(documentNode));
   });
+
+  it("should convert properly escaped keys and values", function () {
+    const JSON_TESTCASE = {
+      "hex\u0001digit\"\/": "\"\\\/\b\f\n\r\t\u0001",
+      a: {
+        "hex\u0001digit\"\/": "\"\\\/\b\f\n\r\t\u0001",
+        b: [
+          "hex\u0001digit\"\/", "\"\\\/\b\f\n\r\t\u0001"
+        ],
+      },
+    };
+
+    const NORMAL_JSON_BUFFER = JSON.stringify(JSON_TESTCASE);
+    const documentNode = parse(NORMAL_JSON_BUFFER);
+
+    expect(JSON_TESTCASE).toEqual(toJSON(documentNode));
+  });
 });

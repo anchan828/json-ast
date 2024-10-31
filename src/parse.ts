@@ -15,8 +15,8 @@ import { error } from "./error.js";
 import { junker } from "./junker.js";
 import { unexpectedEnd, unexpectedToken } from "./parseErrorTypes.js";
 import { JsonPosition } from "./position.js";
-import { JsonTokenTypes, tokenize } from "./tokenize.js";
-import { JsonToken, ParseResult, ParseSettings } from "./types.js";
+import { tokenize } from "./tokenize.js";
+import { JsonTokenTypes, JsonToken, ParseResult, ParseSettings } from "./types.js";
 
 // import util from 'util';
 
@@ -49,33 +49,37 @@ function parseValue(
 ): ParseResult<IJsonNode> {
   // value: object | array | STRING | NUMBER | TRUE | FALSE | NULL | COMMENT
   const token = tokenList[index];
-  let tokenType: JsonNodeTypes;
+  let nodeType: JsonNodeTypes;
 
   switch (token.type) {
     case JsonTokenTypes.STRING:
-      tokenType = JsonNodeTypes.STRING;
+      nodeType = JsonNodeTypes.STRING;
       break;
     case JsonTokenTypes.NUMBER:
-      tokenType = JsonNodeTypes.NUMBER;
+      nodeType = JsonNodeTypes.NUMBER;
       break;
     case JsonTokenTypes.TRUE:
-      tokenType = JsonNodeTypes.TRUE;
+      nodeType = JsonNodeTypes.TRUE;
       break;
     case JsonTokenTypes.FALSE:
-      tokenType = JsonNodeTypes.FALSE;
+      nodeType = JsonNodeTypes.FALSE;
       break;
     case JsonTokenTypes.NULL:
-      tokenType = JsonNodeTypes.NULL;
+      nodeType = JsonNodeTypes.NULL;
       break;
     case JsonTokenTypes.COMMENT:
-      tokenType = JsonNodeTypes.COMMENT;
+      nodeType = JsonNodeTypes.COMMENT;
       break;
     default:
       break;
   }
-  if (tokenType) {
+  if (nodeType) {
     index++;
-    const value = NodeFactory.fromType<JsonValue>(tokenType, token.value);
+    const value = (
+      nodeType === JsonNodeTypes.STRING
+        ? NodeFactory.fromType<JsonValue>(nodeType, token.value, token.decoded)
+        : NodeFactory.fromType<JsonValue>(nodeType, token.value)
+    );
     if (settings.verbose) {
       value.position = token.position;
     }
@@ -106,12 +110,11 @@ function parseObject(
   index: number,
   settings: ParseSettings,
 ): ParseResult<JsonObject> {
-  let startToken;
-  let property;
   const object = NodeFactory.fromType<JsonObject>(JsonNodeTypes.OBJECT);
-
+  let startToken: JsonToken;
+  let token: JsonToken;
+  let property: JsonProperty;
   let state = objectStates._START_;
-  let token;
 
   while (index < tokenList.length) {
     token = tokenList[index];
@@ -141,7 +144,7 @@ function parseObject(
       case objectStates.OPEN_OBJECT: {
         if (token.type === JsonTokenTypes.STRING) {
           property = NodeFactory.fromType<JsonProperty>(JsonNodeTypes.PROPERTY);
-          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value);
+          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value, token.decoded);
 
           if (settings.verbose) {
             property.key.position = token.position;
@@ -198,7 +201,7 @@ function parseObject(
       case objectStates.COLON: {
         const value = parseValue(source, tokenList, index, settings);
         index = value.index;
-        property.value = value.value;
+        property.value = value.value as JsonValue;
 
         object.properties.push(property);
         state = objectStates.VALUE;
@@ -240,7 +243,7 @@ function parseObject(
       case objectStates.COMMA: {
         if (token.type === JsonTokenTypes.STRING) {
           property = NodeFactory.fromType<JsonProperty>(JsonNodeTypes.PROPERTY);
-          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value);
+          property.key = NodeFactory.fromType<JsonKey>(JsonNodeTypes.KEY, token.value, token.decoded);
 
           if (settings.verbose) {
             property.key.position = token.position;
@@ -278,10 +281,10 @@ function parseArray(
   index: number,
   settings: ParseSettings,
 ): ParseResult<JsonArray> {
-  let startToken;
   const array = NodeFactory.fromType<JsonArray>(JsonNodeTypes.ARRAY);
+  let startToken: JsonToken;
+  let token: JsonToken;
   let state = arrayStates._START_;
-  let token;
   while (index < tokenList.length) {
     token = tokenList[index];
     if (token.type === JsonTokenTypes.COMMENT) {
