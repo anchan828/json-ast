@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
+    "target": "ES6",
     "outDir": "dist/esm"
   },
   "exclude": [
