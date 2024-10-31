@@ -1,23 +1,7 @@
 import { error } from "./error.js";
 import { JsonPosition } from "./position.js";
 import { cannotTokenizeSymbol } from "./tokenizeErrorTypes.js";
-import { JsonToken, ParseSettings } from "./types.js";
-
-export enum JsonTokenTypes {
-  COMMENT = "COMMENT", // // ... \n\r? or /* ... */
-  LEFT_BRACE = "LEFT_BRACE", // {
-  RIGHT_BRACE = "RIGHT_BRACE", // }
-  LEFT_BRACKET = "LEFT_BRACKET", // [
-  RIGHT_BRACKET = "RIGHT_BRACKET", // ]
-  COLON = "COLON", //  :
-  COMMA = "COMMA", // ,
-  STRING = "STRING", //
-  NUMBER = "NUMBER", //
-  TRUE = "TRUE", // true
-  FALSE = "FALSE", // false
-  NULL = "NULL", // null
-  IDENTIFIER = "IDENTIFIER", // identifiers
-}
+import { JsonToken, JsonTokenTypes, ParseSettings } from "./types.js";
 
 interface ParseJsonToken {
   type: JsonTokenTypes;
@@ -310,8 +294,8 @@ function parseString(source: string, index: number, line: number, column: number
           return {
             type: JsonTokenTypes.STRING,
             value: buffer,
-            line: line,
-            index: index,
+            line,
+            index,
             column: column + index - startIndex,
           };
         } else {
@@ -487,7 +471,7 @@ export function tokenize(source: string, settings?: ParseSettings): JsonToken[] 
       parseString(source, index, line, column) ||
       parseNumber(source, index, line, column);
     if (matched) {
-      const token = { type: matched.type, value: matched.value } as JsonToken;
+      const token: JsonToken = { type: matched.type, value: matched.value };
 
       if (settings.verbose) {
         token.position = new JsonPosition(line, column, index, matched.line, matched.column, matched.index);

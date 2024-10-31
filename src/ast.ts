@@ -35,7 +35,7 @@ export abstract class JsonNode implements IJsonNode {
   public readonly type: JsonNodeTypes = JsonNodeTypes.ERROR;
 
   public accept(visitor: Visitor): void {
-    visitor.visit(this as any);
+    visitor.visit(this as unknown as JsonNodeType);
   }
 }
 
