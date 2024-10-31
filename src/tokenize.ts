@@ -6,7 +6,7 @@ import { JsonToken, JsonTokenTypes, ParseSettings } from "./types.js";
 interface ParseJsonToken {
   type: JsonTokenTypes;
   value: string;
-  decoded?: string;
+  decoded?: string | null;
   line: number;
   index: number;
   column: number;
