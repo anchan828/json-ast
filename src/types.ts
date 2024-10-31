@@ -30,6 +30,6 @@ export interface ParseSettings {
 export interface JsonToken {
   type: JsonTokenTypes;
   value: string;
-  decoded?: string;
+  decoded?: string | null;
   position?: JsonPosition;
 }
