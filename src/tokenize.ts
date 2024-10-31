@@ -34,23 +34,28 @@ const stringStates = {
 };
 
 const symbolSubstitutes = {
+  0: '\0', // Quotation mask
   b: '\b', // Backspace
   f: '\f', // Form feed
   n: '\n', // New line
   r: '\r', // Carriage return
   t: '\t', // Horizontal tab
+  v: '\v', // Vertical tab
 };
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#escape_sequences
 const escapes = {
   '"': 0, // Quotation mask
   "\\": 1, // Reverse solidus
   "/": 2, // Solidus
-  b: 3, // Backspace
-  f: 4, // Form feed
-  n: 5, // New line
-  r: 6, // Carriage return
-  t: 7, // Horizontal tab
-  u: 8, // 4 hexadecimal digits
+  0: 3, // Null character
+  b: 4, // Backspace
+  f: 5, // Form feed
+  n: 6, // New line
+  r: 7, // Carriage return
+  t: 8, // Horizontal tab
+  v: 9, // Vertical tab
+  u: 10, // 4 hexadecimal digits
 };
 
 // Support regex
