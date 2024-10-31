@@ -88,7 +88,7 @@ export class JsonKey extends JsonNode implements IJsonValue {
 }
 
 export class JsonComment extends JsonNode implements IJsonValue {
-  public readonly type: JsonNodeTypes.KEY = JsonNodeTypes.KEY;
+  public readonly type: JsonNodeTypes.COMMENT = JsonNodeTypes.COMMENT;
 
   constructor(public value: string = null) {
     super();
